@@ -23,6 +23,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -113,5 +114,15 @@ public class ReservationTest {
 
         Offer offer = reservation.calculateOffer(discountPolicy);
         assertEquals(offer.getAvailabeItems().size(), 2);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenAddingUnavailableProduct() {
+        Product mockProduct = mock(Product.class);
+        Product product = new Product(Id.generate(), new Money(100), "Product", ProductType.FOOD);
+        reservation = new Reservation(id, Reservation.ReservationStatus.OPENED, client, new Date());
+
+        when(mockProduct.isAvailable()).thenReturn(false);
+        assertThrows(DomainOperationException.class, ()->{reservation.add(mockProduct, 10);});
     }
 }
