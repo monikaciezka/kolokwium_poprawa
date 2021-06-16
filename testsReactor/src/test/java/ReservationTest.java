@@ -125,4 +125,18 @@ public class ReservationTest {
         when(mockProduct.isAvailable()).thenReturn(false);
         assertThrows(DomainOperationException.class, ()->{reservation.add(mockProduct, 10);});
     }
+
+    @Test
+    void shouldReturnOfferWithOneUnavailableProduct() {
+        Product mockProduct = mock(Product.class);
+        Product product = new Product(Id.generate(), new Money(100), "Product", ProductType.FOOD);
+        reservation = new Reservation(id, Reservation.ReservationStatus.OPENED, client, new Date());
+        when(mockProduct.isAvailable()).thenReturn(true).thenReturn(false);
+        when(mockProduct.generateSnapshot()).thenReturn(product.generateSnapshot());
+        reservation.add(mockProduct, 10);
+
+
+        Offer offer = reservation.calculateOffer(discountPolicy);
+        assertEquals(offer.getUnavailableItems().size(), 1);
+    }
 }
