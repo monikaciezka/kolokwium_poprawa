@@ -33,8 +33,6 @@ public class ReservationTest {
     ClientData client;
     @Mock
     DiscountPolicy discountPolicy;
-    @Mock
-    Product mockProduct;
     Date date;
     Id id;
 
@@ -94,6 +92,13 @@ public class ReservationTest {
     void whenTryingToCloseClosedShouldThroughException() {
         reservation = new Reservation(id, Reservation.ReservationStatus.CLOSED, client, date);
         assertThrows(DomainOperationException.class, ()->{reservation.close();});
+    }
+
+    @Test
+    void shouldCloseOpenReservation() {
+        reservation = new Reservation(id, Reservation.ReservationStatus.OPENED, client, date);
+        reservation.close();
+        assertEquals(reservation.getStatus(), Reservation.ReservationStatus.CLOSED);
     }
 
     @Test
