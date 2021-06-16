@@ -29,7 +29,7 @@ public class Reservation {
     @SuppressWarnings("unused")
     private Reservation() {}
 
-    Reservation(Id id, ReservationStatus status, ClientData clientData, Date createDate) {
+    public Reservation(Id id, ReservationStatus status, ClientData clientData, Date createDate) {
         this.id = id;
         this.status = status;
         this.clientData = clientData;
