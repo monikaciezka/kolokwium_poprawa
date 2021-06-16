@@ -81,13 +81,13 @@ public class ReservationTest {
     }
 
     @Test
-    void name() {
+    void whenAddingMultipleOfTheSameProductReturnOneOfferItem() {
         Product product = new Product(Id.generate(), new Money(100), "Product", ProductType.FOOD);
-        reservation = new Reservation(id, Reservation.ReservationStatus.CLOSED, client, date);
+        reservation = new Reservation(id, Reservation.ReservationStatus.OPENED, client, date);
         reservation.add(product, 10);
         reservation.add(product, 5);
-        when(discountPolicy.applyDiscount(any(), any(), any())).thenReturn(new Discount("promotion", null));
+        when(discountPolicy.applyDiscount(product, 15, new Money((100)))).thenReturn(new Discount("promotion", new Money(5)));
         Offer offer = reservation.calculateOffer(discountPolicy);
-        assertEquals(1, offer.getAvailabeItems().size());
+        assertEquals(offer.getAvailabeItems().size(), 1);
     }
 }
