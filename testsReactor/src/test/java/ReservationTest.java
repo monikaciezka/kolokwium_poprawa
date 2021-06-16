@@ -62,15 +62,22 @@ public class ReservationTest {
 
     @Test
     void shouldAddProductSuccessfully() {
+        Product product = new Product(Id.generate(), new Money(100), "Product", ProductType.FOOD);
+        reservation = new Reservation(id, Reservation.ReservationStatus.OPENED, client, date);
+        reservation.add(product, 10);
+        assertEquals(reservation.contains(product), true);
+
     }
 
     @Test
-    @Disabled
-    void addingUnavailableProductShouldProduceError() {
-      //  Product product = new Product(Id.generate(), new Money(100), "Product", ProductType.FOOD);
-        reservation = new Reservation(id, Reservation.ReservationStatus.CLOSED, client, date);
-        when(mockProduct.isAvailable()).thenReturn(false);
-        assertThrows(DomainOperationException.class, ()-> { reservation.add(mockProduct, 1);});
+    void shouldReturnListOfOneAvailableProduct() {
+        Product product = new Product(Id.generate(), new Money(100), "Product", ProductType.FOOD);
+        reservation = new Reservation(id, Reservation.ReservationStatus.OPENED, client, date);
+        reservation.add(product, 10);
+        when(discountPolicy.applyDiscount(product, 10, new Money((100)))).thenReturn(new Discount("promotion", new Money(5)));
+        Offer offer = reservation.calculateOffer(discountPolicy);
+        assertEquals(offer.getAvailabeItems().size(), 1);
+
     }
 
     @Test
@@ -79,7 +86,7 @@ public class ReservationTest {
         reservation = new Reservation(id, Reservation.ReservationStatus.CLOSED, client, date);
         reservation.add(product, 10);
         reservation.add(product, 5);
-        when(discountPolicy.applyDiscount(any(), any(), any())).thenReturn(new Discount("promotion", new Money(5)));
+        when(discountPolicy.applyDiscount(any(), any(), any())).thenReturn(new Discount("promotion", null));
         Offer offer = reservation.calculateOffer(discountPolicy);
         assertEquals(1, offer.getAvailabeItems().size());
     }
